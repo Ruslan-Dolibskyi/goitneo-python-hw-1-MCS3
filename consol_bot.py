@@ -1,54 +1,87 @@
 def hello():
     return "How can I help you?"
 
-def add(username, phone, contacts):
+
+def add(*args, contacts):
+    username = args[0]
+    phone = args[1]
     contacts[username] = phone
     return f"Added {username} with phone number {phone}"
 
-def change(username, phone, contacts):
+
+def change(*args, contacts):
+    username = args[0]
+    phone = args[1]
     if username in contacts:
         contacts[username] = phone
         return f"Changed {username}'s phone number to {phone}"
     return f"{username} not found"
 
-def phone(username, contacts):
+
+def phone(*args, contacts):
+    username = args[0]
     if username in contacts:
         return contacts[username]
     return f"{username} not found"
 
-def all_contacts(contacts):
+
+def all_contacts(*args, contacts):
     if not contacts:
         return "No contacts saved"
     return "\n".join([f"{username}: {number}" for username, number in contacts.items()])
 
-def exit_bot():
+
+def exit_bot(*args, contacts):
     return "Good bye!"
+
+
+def unknown_command(*args, contacts):
+    return "Unknown command. Try again"
+
+
+COMMANDS = {
+    hello: "hello",
+    add: "add",
+    change: "change",
+    phone: "phone",
+    all_contacts: "all",
+    exit_bot: ("exit", "close")
+}
+
+
+def pars_command(line: str) -> tuple[callable, list]:
+    for cmd, kwords in COMMANDS.items():
+        if line.lower().startswith(kwords):
+            return cmd, line.split(" ")[1:]
+    return unknown_command, []
+
 
 def main():
     contacts = {}
     while True:
-        command = input("Enter command: ").strip().lower()
+        user_input = input("Enter command: ").strip()
         
-        if command == "hello":
-            print(hello())
+        command, data = pars_command(user_input)
+        print(command(*data, contacts=contacts))
+        # if command == "hello":
+        #     print(hello())
             
-        elif command.startswith("add "):
-            _, username, phone = command.split()
-            print(add(username, phone, contacts))
+        # elif command.startswith("add "):
+        #     _, username, phone = command.split()
+        #     print(add(username, phone, contacts))
             
-        elif command.startswith("change "):
-            _, username, phone = command.split()
-            print(change(username, phone, contacts))
+        # elif command.startswith("change "):
+        #     _, username, phone = command.split()
+        #     print(change(username, phone, contacts))
             
-        elif command.startswith("phone "):
-            _, username = command.split()
-            print(phone(username, contacts))
+        # elif command.startswith("phone "):
+        #     _, username = command.split()
+        #     print(phone(username, contacts))
             
-        elif command == "all":
-            print(all_contacts(contacts))
+        # elif command == "all":
+        #     print(all_contacts(contacts))
             
-        elif command in ["close", "exit"]:
-            print(exit_bot())
+        if command == exit_bot:
             break
 
 if __name__ == "__main__":
