@@ -1,60 +1,34 @@
-def input_error(func):
-    def inner(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except (ValueError, IndexError) as e:
-            return "Give me name and phone please."
-        except KeyError:
-            return "Contact not found."
-        except Exception as e:
-            return f"Unexpected error: {e}"
-
-    return inner
-
-@input_error
 def hello(*args, contacts):
     return "How can I help you?"
 
-@input_error
 def add(*args, contacts):
-    if len(args) < 2:
-        raise ValueError
     username = args[0]
     phone = args[1]
     contacts[username] = phone
     return f"Added {username} with phone number {phone}"
 
-@input_error
 def change(*args, contacts):
-    if len(args) < 2:
-        raise ValueError
     username = args[0]
     phone = args[1]
     if username in contacts:
         contacts[username] = phone
         return f"Changed {username}'s phone number to {phone}"
-    raise KeyError
+    return f"{username} not found"
 
-@input_error
 def phone(*args, contacts):
-    if len(args) == 0:
-        raise ValueError
     username = args[0]
     if username in contacts:
         return contacts[username]
-    raise KeyError
+    return f"{username} not found"
 
-@input_error
 def all_contacts(*args, contacts):
     if not contacts:
         return "No contacts saved"
     return "\n".join([f"{username}: {number}" for username, number in contacts.items()])
 
-@input_error
 def exit_bot(*args, contacts):
     return "Good bye!"
 
-@input_error
 def unknown_command(*args, contacts):
     return "Unknown command. Try again"
 
